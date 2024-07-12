@@ -12,23 +12,29 @@ Route::get('/', function () {
     $tags = Tag::all();
     return view('job.index' , ['jobs' => $jobs , 'tags' => $tags]);
 });
-Route::get('/job/create', function () {
-    return view('job.create');
+
+Route::middleware('guest')->group(function () {
+
+    Route::controller(RegisteredUserController::class)->group(function(){
+        Route::get('/register','create');
+        Route::post('/register','store');
+
+    });
+
+    Route::controller(SessionController::class)->group(function(){
+
+        Route::post('/login','store');
+        Route::get('/login','create');
+        Route::post('/logout','destroy');
+
+    });
+
 });
+
+
+
+Route::get('/job/create', [JobController::class, 'create']);
 Route::post('/job', [JobController::class, 'store']);
-Route::controller(RegisteredUserController::class)->group(function(){
-    Route::get('/register','create');
-    Route::post('/register','store');
-
-});
 
 
-
-Route::controller(SessionController::class)->group(function(){
-
-    Route::post('/login','store');
-    Route::get('/login','create');
-    Route::post('/logout','destroy');
-
-});
 
